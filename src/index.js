@@ -179,10 +179,33 @@ export default function ({Plugin, types: t}) {
                         let messagesFilename = p.join(
                             messagesDir,
                             p.dirname(p.relative(process.cwd(), filename)),
-                            basename + '.json'
+                            basename + '.js'
                         );
 
-                        let messagesFile = JSON.stringify(descriptors, null, 2);
+                        const wrappedComment = (text) => {
+                            return `/* ${text} */`;
+                        };
+
+                        const generateLine = (key, description, message) => {
+                            if (description) {
+                                return `  ${key}: '${message}', ${wrappedComment(description)}`;
+                            }
+
+                            return `  ${key}: '${message},'`;
+                        };
+
+                        const generateFile = (lines) => {
+                            lines.unshift('export default {');
+                            lines.push('};');
+
+                            return lines.join('\n');
+                        };
+
+                        const strings = descriptors.map(({id, description, defaultMessage}) => {
+                            return generateLine(id, description, defaultMessage);
+                        });
+
+                        let messagesFile = generateFile(strings);
 
                         mkdirpSync(p.dirname(messagesFilename));
                         writeFileSync(messagesFilename, messagesFile);
