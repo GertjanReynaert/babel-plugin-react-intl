@@ -170,7 +170,7 @@ export default function ({Plugin, types: t}) {
         exit(node, parent, scope, file) {
           const {messages}  = file.get('react-intl');
           const {messagesDir} = getReactIntlOptions(file.opts);
-          const {basename, filename} = file.opts;
+          const {basename} = file.opts;
 
           let descriptors = [...messages.values()];
           file.metadata['react-intl'] = {messages: descriptors};
@@ -178,7 +178,6 @@ export default function ({Plugin, types: t}) {
           if (messagesDir) {
             let messagesFilename = p.join(
               messagesDir,
-              p.dirname(p.relative(process.cwd(), filename)),
               basename + '.js'
             );
 
